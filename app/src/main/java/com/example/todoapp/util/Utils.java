@@ -11,9 +11,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Utils {
-    public static String  formatDate(Date date) {
+    public static String formatDate(Date date) {
         SimpleDateFormat simpleDateFormat = (SimpleDateFormat) SimpleDateFormat.getDateInstance();
         simpleDateFormat.applyPattern("EEE, MMM d");
+        return simpleDateFormat.format(date);
+    }
+
+    public static String formatDateForTitle(Date date) {
+        SimpleDateFormat simpleDateFormat = (SimpleDateFormat) SimpleDateFormat.getDateInstance();
+        simpleDateFormat.applyPattern("MMMM dd, yyyy");
         return simpleDateFormat.format(date);
     }
 
