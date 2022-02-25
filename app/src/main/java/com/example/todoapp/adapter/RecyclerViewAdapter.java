@@ -1,20 +1,20 @@
 package com.example.todoapp.adapter;
 
-import android.content.res.ColorStateList;
-import android.graphics.Color;
+import android.graphics.Paint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatRadioButton;
+import androidx.appcompat.widget.AppCompatCheckBox;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todoapp.R;
 import com.example.todoapp.model.Task;
 import com.example.todoapp.util.Utils;
-import com.google.android.material.chip.Chip;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.todo_row, parent, false);
+                .inflate(R.layout.view_holder_task, parent, false);
         return new ViewHolder(view);
     }
 
@@ -40,20 +40,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Task task = taskList.get(position);
         String formatted = Utils.formatDate(task.getDueDate());
 
-        ColorStateList colorStateList = new ColorStateList(new int[][]{
-                new int[]{-android.R.attr.state_enabled},
-                new int[]{android.R.attr.state_enabled}
-        },
-                new int[] {
-                        Color.LTGRAY, //disabled
-                        Utils.priorityColor(task)
-                });
-
-        holder.task.setText(task.getTask());
-        holder.todayChip.setText(formatted);
-        holder.todayChip.setBackgroundColor(Utils.priorityColor(task));
-        holder.todayChip.setChipIconTint(colorStateList);
-        holder.radioButton.setButtonTintList(colorStateList);
+        holder.taskName.setText(task.getTask());
+        holder.dueDateTextView.setText(formatted);
+        if (task.isDone) {
+            holder.radioButton.setChecked(true);
+            holder.taskName.setPaintFlags(holder.taskName.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.dueDateTextView.setPaintFlags(holder.taskName.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        }
     }
 
     @Override
@@ -62,9 +55,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public AppCompatRadioButton radioButton;
-        public AppCompatTextView task;
-        public Chip todayChip;
+        public AppCompatCheckBox radioButton;
+        public AppCompatTextView taskName;
+        public AppCompatTextView dueDateTextView;
+        public AppCompatImageButton deleteButton;
 
         OnTodoClickListener onTodoClickListener;
 
@@ -72,8 +66,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             super(itemView);
             radioButton = itemView.findViewById(R.id.todo_radio_button);
             radioButton.setOnClickListener(this);
-            task = itemView.findViewById(R.id.todo_row_todo);
-            todayChip = itemView.findViewById(R.id.todo_row_chip);
+            taskName = itemView.findViewById(R.id.view_holder_task_name);
+            dueDateTextView = itemView.findViewById(R.id.view_holder_task_due_date);
+            deleteButton = itemView.findViewById(R.id.view_holder_delete_btn);
+            deleteButton.setOnClickListener(this);
+
             this.onTodoClickListener = todoClickListener;
 
             itemView.setOnClickListener(this);
@@ -87,7 +84,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 todoClickListener.onTodoClick(currTask);
             } else if (id == R.id.todo_radio_button) {
                 todoClickListener.onTodoRadioButtonClick(currTask);
+            } else if (id == R.id.view_holder_delete_btn) {
+                todoClickListener.onDeleteTodoClick(currTask);
             }
         }
+
+
     }
 }

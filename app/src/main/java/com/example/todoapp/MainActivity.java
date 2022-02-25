@@ -1,13 +1,17 @@
 package com.example.todoapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -24,11 +28,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements OnTodoClickListener {
-    public final String TAG = "MAIN_ACTIVITY";
     private TaskViewModel taskViewModel;
     private RecyclerView recyclerView;
     private RecyclerViewAdapter recyclerViewAdapter;
-    BottomSheetFragment bottomSheetFragment;
     private ShareViewModel shareViewModel;
     private TextView mainDateTitle;
     private TextView numberOfTasks;
@@ -37,11 +39,6 @@ public class MainActivity extends AppCompatActivity implements OnTodoClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        bottomSheetFragment = new BottomSheetFragment();
-        ConstraintLayout constraintLayout = findViewById(R.id.bottomSheet);
-        BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(constraintLayout);
-        bottomSheetBehavior.setPeekHeight(BottomSheetBehavior.STATE_HIDDEN);
 
         mainDateTitle = findViewById(R.id.main_title_date);
         numberOfTasks = findViewById(R.id.main_number_task);
@@ -64,24 +61,34 @@ public class MainActivity extends AppCompatActivity implements OnTodoClickListen
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            showBottomSheetFragment();
+            Intent intent = new Intent(this, AddTaskActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right,
+                    R.anim.slide_out_left);
         });
     }
 
-    private void showBottomSheetFragment(){
-        bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
-    }
 
     @Override
     public void onTodoClick(Task task) {
         shareViewModel.selectItem(task);
         shareViewModel.setEdit(true);
-        showBottomSheetFragment();
+        // TODO: update task
     }
 
     @Override
     public void onTodoRadioButtonClick(Task task) {
+        Log.d("VH LISTENER", "onTodoRadioButtonClick: update task " + task.getTaskId());
+        task.setDone(!task.isDone());
+        TaskViewModel.update(task);
+    }
+
+    @Override
+    public void onDeleteTodoClick(Task task) {
+        Log.d("VH LISTENER", "onDeleteTodoClick: delete task " + task.getTaskId());
         TaskViewModel.delete(task);
         recyclerViewAdapter.notifyDataSetChanged();
     }
+
+
 }

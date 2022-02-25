@@ -6,4 +6,6 @@ public interface OnTodoClickListener {
     void onTodoClick(Task task);
 
     void onTodoRadioButtonClick(Task task);
+
+    void onDeleteTodoClick(Task task);
 }
