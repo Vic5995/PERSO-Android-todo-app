@@ -1,5 +1,6 @@
 # PERSO-Android-todo-app
 The first part of this project was done in a [Android Bootcamp from Udemy](https://www.udemy.com/share/101WBM3@v8dLoK7gdd_BM8MPj1_SZwwpD3vbRcP_MMpsEN5K0Ig_fucV1Y6IUyW5FCANamHB/)
+Design inspired by this design on [Figma](https://www.figma.com/community/file/1060984377697295929/DAILY-UI-%2342-ToDo-List)
 ## What has been done ?
 * Tasks are save in Room Databse
 * User can see an input field where he can type in a to-do item
